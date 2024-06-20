@@ -1,0 +1,33 @@
+Import('env', 'envCython', 'arch', 'common')
+
+import shutil
+
+cerealJLL_dir = Dir('.')
+genJLL_dir = Dir('genJLL')
+messagingJLL_dir = Dir('messagingJLL')
+
+# Build cerealJLL
+schema_files = ['logJLL.capnp', 'carJLL.capnp']
+'''
+env.Command(["genJLL/c/include/c++.capnp.h"], [], "mkdir -p " + genJLL_dir.path + "/c/include && touch $TARGETS")
+env.Command([f'genJLL/cpp/{s}.c++' for s in schema_files] + [f'genJLL/cpp/{s}.h' for s in schema_files],
+            schema_files,
+            f"capnpc --src-prefix={cerealJLL_dir.path} $SOURCES -o c++:{genJLL_dir.path}/cpp/")
+'''
+cerealJLL_objects = env.SharedObject([f'genJLL/cpp/{s}.c++' for s in schema_files])
+env.Library('cerealJLL', cerealJLL_objects)
+env.SharedLibrary('cerealJLL_shared', cerealJLL_objects)
+
+# Build messaging
+servicesJLL_h = env.Command(['servicesJLL.h'], ['servicesJLL.py'], 'python3 ' + cerealJLL_dir.path + '/servicesJLL.py > $TARGET')
+messagingJLL_objects = env.SharedObject([
+  'messagingJLL/messaging.cc',
+  'messagingJLL/impl_zmq.cc',
+  'messagingJLL/impl_msgq.cc',
+  'messagingJLL/msgq.cc',
+  'messagingJLL/socketmaster.cc',
+])
+messagingJLL_lib = env.Library('messagingJLL', messagingJLL_objects)
+Depends('messagingJLL/impl_zmq.cc', servicesJLL_h)
+
+envCython.Program('messagingJLL/messaging_pyx.so', 'messagingJLL/messaging_pyx.pyx', LIBS=envCython["LIBS"]+[messagingJLL_lib, "zmq", common])

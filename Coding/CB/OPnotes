@@ -1,0 +1,77 @@
+OP coding notes
+
+2021.6.25 YP Thesis
+- inverted residuals: https://towardsdatascience.com/mobilenetv2-inverted-residuals-and-linear-bottlenecks-8a4362f4ffd5
+- Can you make a table in Appendix to list allowed activation functions and layers by SNPE?
+  This will help your OP successors to change their nets to be compatible with SNPE.
+- Stem Operator: https://towardsdatascience.com/complete-architectural-details-of-all-efficientnet-models-5fd5b736142
+
+
+python train_model.py   python server.py
+
+--------------- 2021.3.26
+openpilot/selfdrive/debug/uiview.py
+openpilot/selfdrive/manager/process_config.py
+openpilot/selfdrive/manager/process.py
+
+(OP) jinn@Liu:~/openpilot/selfdrive/debug$ python uiview.py
+scons: Reading SConscript files ...
+scons: warning: Could not detect qt, using moc executable as a hint (QTDIR=/usr)
+File "/home/jinn/openpilot/SConstruct", line 215, in <module>
+scons: done reading SConscript files.
+scons: Building targets ...
+clang++ -o selfdrive/ui/ui.o -c ...
+....
+-I/usr/include/x86_64-linux-gnu/qt5/QtDBus selfdrive/ui/ui.cc
+scons: done building targets.
+starting process camerad
+starting process ui
+camerad: selfdrive/common/clutil.c:45: cl_device_id cl_get_device_id(cl_device_type): Assertion `err == 0' failed.
+/home/jinn/openpilot/cereal/messaging/__init__.py:218: UserWarning: This message has already
+....
+  dat = dat.to_bytes()
+resize 1920x1080
+Error 00000502 after convex fill
+....
+^Ckilling camerad
+camerad is dead with -6
+killing ui
+ui is dead with -2
+
+output: /home/jinn/Screenshots/2021-03-26 09-24-58.png
+
+--------------- 2021.3.20-2021.3.
+/home/jinn/YPNet/train_model.py
+/home/jinn/YPNet/server.py
+/home/jinn/YPNet/datag.py
+/home/jinn/YPNet/modell.py
+
+camera8M260x260.h5   camera1G260x260.h5
+
+5. type "<f4"??? numpy.dtype.byteorder Little and Big Endian Mystery
+4. tf.keras.layers.Layer??? https://www.tensorflow.org/api_docs/python/tf/keras/layers/Layer
+3. model.fit_generator (old) model.fit (new)
+2. w3schools
+import numpy as np
+arr=np.eye(3, dtype=int, k=-1)
+print(arr)
+[[0 0 0]
+ [1 0 0]
+ [0 1 0]]
+1. # After training.
+y_pred_1 = model(X_new)
+y_pred_2 = model.call(X_new)
+y_pred_3 = model.predict(X_new)
+
+The only difference is that call accepts only tensors, while the other two methods also accept NumPy arrays.
+
+Appendices
+--- check cpu
+jinn@Liu:~$ cat /proc/cpuinfo
+--- check gpu
+jinn@Liu:~$ sudo lshw -C display
+sudo apt purge
+
+References
+https://github.com/junfu1115/DANet
+2019 (Atten) Dual Attention Network for Scene Segmentation
